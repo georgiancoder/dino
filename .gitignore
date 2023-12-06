@@ -1,0 +1,5 @@
+/package-lock.json
+/node_modules/
+/.idea/modules.xml
+/.idea/phaser-dino-clone.iml
+/.idea/.gitignore
