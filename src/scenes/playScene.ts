@@ -25,6 +25,7 @@ class PlayScene extends GameScene{
         this.createPlayer();
         this.createObstacles();
         this.createGameOverContainer();
+        this.createAnimations();
 
         this.handleGameStart();
         this.handleObstacleCollisions();
@@ -62,15 +63,16 @@ class PlayScene extends GameScene{
 
     spawnObstacle(){
         const obstacleNum = Math.floor(Math.random() * PRELOAD_CONFIG.cactusesCount + PRELOAD_CONFIG.birdsCount) + 1;
-        const distance = Phaser.Math.Between(600,900);
+        const distance = Phaser.Math.Between(150,300);
 
         let obstacle;
         if (obstacleNum > PRELOAD_CONFIG.cactusesCount) {
             const enemyPosibleHeight = [20, 70];
             const enemyHeight = enemyPosibleHeight[Math.floor(Math.random() * 2)];
-            obstacle = this.obstacles.create(distance, this.gameHeight - enemyHeight, `enemy-bird`);
+            obstacle = this.obstacles.create(this.gameWidth + distance, this.gameHeight - enemyHeight, `enemy-bird`);
+            obstacle.play('enemy-bird-fly');
         } else {
-            obstacle = this.obstacles.create(distance, this.gameHeight, `obstacle-${obstacleNum}`);
+            obstacle = this.obstacles.create(this.gameWidth + distance, this.gameHeight, `obstacle-${obstacleNum}`);
         }
 
         obstacle.setOrigin(0,1)
@@ -126,6 +128,7 @@ class PlayScene extends GameScene{
         this.physics.add.collider(this.obstacles, this.player, () => {
             this.physics.pause();
             this.isGameRunning = false;
+            this.anims.pauseAll();
             this.player.die();
             this.gameOverContainer.setAlpha(1);
         });
@@ -139,6 +142,15 @@ class PlayScene extends GameScene{
             this.gameOverContainer.setAlpha(0);
             this.anims.resumeAll();
             this.isGameRunning = true;
+        });
+    }
+
+    private createAnimations() {
+        this.anims.create({
+            key: 'enemy-bird-fly',
+            frames: this.anims.generateFrameNumbers('enemy-bird'),
+            frameRate: 6,
+            repeat: -1
         });
     }
 }
