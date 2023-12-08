@@ -17,6 +17,7 @@ class PlayScene extends GameScene{
     gameSpeed: number = 10;
     gameSpeedModifier: number = 1;
     scoreText: Phaser.GameObjects.Text;
+    hightScoreText: Phaser.GameObjects.Text;
 
     clouds: Phaser.Physics.Arcade.Group;
     gameOverContainer: Phaser.GameObjects.Container;
@@ -66,6 +67,13 @@ class PlayScene extends GameScene{
             this.scoreDeltaTime = 0;
             if (this.score % 100 == 0){
                 this.gameSpeedModifier += .2;
+                this.tweens.add({
+                    targets: this.scoreText,
+                    duration: 150,
+                    repeat: 3,
+                    alpha: 0,
+                    yoyo: true
+                });
             }
         }
         this.spawnTime += deltaTime;
@@ -172,6 +180,12 @@ class PlayScene extends GameScene{
             this.anims.pauseAll();
             this.player.die();
             this.score = 0;
+
+            const newHighScore = this.hightScoreText.text.substring(this.hightScoreText.text.length - 5);
+            const newScore = Number(this.scoreText.text) > Number(newHighScore) ? this.scoreText.text: newHighScore;
+            this.hightScoreText.setText('HI ' + newScore);
+            this.hightScoreText.setAlpha(1);
+
             this.gameSpeedModifier = 1;
             this.gameOverContainer.setAlpha(1);
         });
@@ -185,6 +199,7 @@ class PlayScene extends GameScene{
             this.gameOverContainer.setAlpha(0);
             this.anims.resumeAll();
             this.isGameRunning = true;
+            this.hightScoreText.setAlpha(0);
         });
     }
 
@@ -199,6 +214,14 @@ class PlayScene extends GameScene{
 
     private createScore() {
         this.scoreText = this.add.text(this.gameWidth,0, '00000', {
+            fontSize: 30,
+            fontFamily: 'Arial',
+            color: '#535353',
+            resolution: 5
+        }).setOrigin(1,0)
+            .setAlpha(0);
+
+        this.hightScoreText = this.add.text(this.gameWidth - this.scoreText.width - 20,0, '00000', {
             fontSize: 30,
             fontFamily: 'Arial',
             color: '#535353',
